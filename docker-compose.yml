@@ -7,10 +7,25 @@ services:
     depends_on:
       - wordpress
     volumes:
-      - ./nginx/html:/usr/share/nginx/html
+      - ./src:/var/www/html
       - ./logs/nginx:/var/log/nginx
   wordpress:
     build: ./wordpress
+    depends_on:
+      - mariadb
     volumes:
-      - ./wordpress/src:/var/www/html
+      - ./src:/var/www/html
       - ./logs/wordpress/php:/var/log/php
+  mariadb:
+    build: ./mariadb
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: example
+    volumes:
+      - ./resources/mariadb:/var/lib/mysql
+      - ./logs/mariadb:/var/log/mysql
